@@ -14,7 +14,7 @@ const ShowWeather = ({weatherData}) => {
             <div>
                 <h3>Weather in {capital}</h3>
                 <div>temperature {temperature} Celsius</div>
-                <img src={iconLink} width={100}></img>
+                <img src={iconLink} width={80}></img>
                 <div>wind {wind} m/s</div>
             </div>
         )
@@ -28,9 +28,6 @@ const ShowResults = ({results, error, showOne, handleClick}) => {
         const languages = result.map(r => Object.values(r.languages))
         const flag = result[0]?.flags?.png
         const capital = result[0]?.capital
-        const latlng = result.map(r => Object.values(r.capitalInfo))
-        const lat = latlng[0][0][0]
-        const lon = latlng[0][0][1]
         
         return (
             <div>
@@ -41,7 +38,7 @@ const ShowResults = ({results, error, showOne, handleClick}) => {
                 <ul>
                     {languages[0].map(l => <li key={l}>{l}</li>)}
                 </ul>
-                <img src={flag}/>
+                <img src={flag} width={200}/>
             </div>
         )
     }
