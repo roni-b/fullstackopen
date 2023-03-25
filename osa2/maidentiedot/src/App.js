@@ -29,12 +29,13 @@ const ShowResults = ({results, error, showOne, handleClick}) => {
         const flag = result[0]?.flags?.png
         const capital = result[0]?.capital
         const country = result[0]?.name?.common
-        
+        const area = result[0]?.area
+
         return (
             <div>
                 <h1>{country}</h1>
                 <div>capital {capital}</div>
-                <div>area {result.map(r => r.area)}</div>
+                <div>area {area}</div>
                 <h3>languages</h3>
                 <ul>
                     {languages[0].map(l => <li key={l}>{l}</li>)}
