@@ -1,9 +1,11 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFrdWFua2thIiwiaWQiOiI2NDRhNWZiNTdlMTM0ZDQ0YTJkNDFkZjMiLCJpYXQiOjE2ODMxMTI4NTksImV4cCI6MTY4MzExNjQ1OX0.8Ij27Q-2bw_5HH4y70_qg5MAZNvAIQtoUIXVQ_cqjBo
 
 {
-    "title": "skripta",
-    "number": "jussi",
+    "title": "testi3",
+    "author": "someone",
     "url": "urlosoite",
-    "likes": 10
+    "likes": 10,
+    "userId": "644a5fb57e134d44a2d41df3"
 }
