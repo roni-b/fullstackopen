@@ -1,28 +1,34 @@
 import axios from 'axios'
-import { act } from 'react-dom/test-utils'
-const baseUrl = 'http://localhost:3001/persons'
+
+const baseUrl = '/api/persons'
 
 const getAll = () => {
-    return axios.get(baseUrl)
+  const request = axios.get(baseUrl)
+  return request.then(response => response.data)
 }
 
-const create = newName => {
-    return axios.post(baseUrl, newName)
+const create = newObject => {
+  const request = axios.post(baseUrl, newObject)
+  return request.then(response => response.data)
 }
 
-const deleteName = id => {
-    return axios.delete(`${baseUrl}/${id}`)
+const remove = id => {
+  const url = `${baseUrl}/${id}`
+  const request = axios.delete(url)
+  return request.then(response => response.data)
 }
 
-const update = (newNumber, person) => {
-    const url = `${baseUrl}/${person.id}`
-    const changedNumber = { ...person, number: newNumber}
-    return axios.put(url, changedNumber)
+const update = (id, updatedObject) => {
+  const url = `${baseUrl}/${id}`
+  const request = axios.put(url, updatedObject)
+  return request.then(response => response.data)
 }
 
-export default {
-    getAll: getAll,
-    create: create,
-    deleteName: deleteName,
-    update: update
+const all = {
+    getAll,
+    create,
+    remove,
+    update
 }
+
+export default all

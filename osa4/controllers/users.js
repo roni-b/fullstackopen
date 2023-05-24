@@ -5,15 +5,9 @@ const User = require('../models/user')
 usersRouter.post('/', async (request, response) => {
   const { username, name, password } = request.body
 
-  if (!username || !password) {
+  if (!password || password.length < 3) {
     return response.status(400).json({
-      error: 'username or password is missing'
-    })
-  }
-
-  if (password.length < 3) {
-    return response.status(400).json({
-      error: 'password is too short'
+      error: '`password` is shorter than the minimum allowed length (3)'
     })
   }
 

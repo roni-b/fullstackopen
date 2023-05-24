@@ -3,15 +3,13 @@ const mongoose = require('mongoose')
 const blogSchema = new mongoose.Schema({
   title: {
     type: String,
-    minlength: 4,
     required: true
   },
-  author: String,
-  url: {
+  author: {
     type: String,
-    minlength: 4,
     required: true
   },
+  url: String,
   likes: Number,
   user: {
     type: mongoose.Schema.Types.ObjectId,
