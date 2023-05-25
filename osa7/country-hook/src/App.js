@@ -22,7 +22,6 @@ const useCountry = (name) => {
     axios
       .get(`https://studies.cs.helsinki.fi/restcountries/api/name/${name}`)
       .then(response => {
-        console.log(response.data.flag)
         const data = {
           name: response.data.name.common,
           capital: response.data.capital,
