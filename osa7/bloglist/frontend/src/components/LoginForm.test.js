@@ -10,12 +10,15 @@ test('<LoginForm /> updates parent state and calls onSubmit', async () => {
   const handleUsernameChange = jest.fn()
   const handlePasswordChange = jest.fn()
 
-  render(<LoginForm handleSubmit={handleSubmit}
-    handleUsernameChange={handleUsernameChange}
-    handlePasswordChange={handlePasswordChange}
-    username={''}
-    password={''}
-  />)
+  render(
+    <LoginForm
+      handleSubmit={handleSubmit}
+      handleUsernameChange={handleUsernameChange}
+      handlePasswordChange={handlePasswordChange}
+      username={''}
+      password={''}
+    />
+  )
 
   const usernameInput = screen.getByPlaceholderText('username')
   const passwordInput = screen.getByPlaceholderText('password')
@@ -26,5 +29,4 @@ test('<LoginForm /> updates parent state and calls onSubmit', async () => {
   await user.click(loginButton)
 
   expect(handleSubmit.mock.calls).toHaveLength(1)
-
 })

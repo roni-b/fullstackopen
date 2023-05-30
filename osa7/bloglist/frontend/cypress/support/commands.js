@@ -14,7 +14,8 @@
 
 Cypress.Commands.add('login', ({ username, password }) => {
   cy.request('POST', 'http://localhost:3003/api/login', {
-    username, password
+    username,
+    password,
   }).then(({ body }) => {
     localStorage.setItem('loggedBlogappUser', JSON.stringify(body))
     cy.visit('http://localhost:3000')
@@ -32,8 +33,10 @@ Cypress.Commands.add('createBlog', ({ blog }) => {
     method: 'POST',
     body: blog,
     headers: {
-      'Authorization': `Bearer ${JSON.parse(localStorage.getItem('loggedBlogappUser')).token}`
-    }
+      Authorization: `Bearer ${
+        JSON.parse(localStorage.getItem('loggedBlogappUser')).token
+      }`,
+    },
   })
   cy.visit('http://localhost:3000')
 })
@@ -45,4 +48,3 @@ Cypress.Commands.add('createBlog', ({ blog }) => {
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-

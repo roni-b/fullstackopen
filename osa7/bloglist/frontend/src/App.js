@@ -1,118 +1,134 @@
-import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
-import blogService from './services/blogs'
-import loginService from './services/login'
-import storageService from './services/storage'
+import { useEffect, useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Container } from '@mui/material'
+import styled from 'styled-components'
+import { Button } from '@mui/material'
+import {
+  BrowserRouter as Router,
+  Routes, Route, Link
+} from 'react-router-dom'
+import { setNotification } from './reducers/notificationReducer'
+import { initializeBlogs, createBlog, updateBlog, removeBlog, addCommentToBlog } from './reducers/blogReducer'
+import { getLoggedUser, userLogin, userLogout } from './reducers/userReducer'
+import { getUsers, addUsers } from './reducers/usersReducer'
 
+import Users from './components/Users'
+import User from './components/User'
+import Blogs from './components/Blogs'
+import BlogPage from './components/BlogPage'
 import LoginForm from './components/Login'
-import NewBlog from './components/NewBlog'
 import Notification from './components/Notification'
-import Togglable from './components/Togglable'
+import usersService from './services/users'
+
+const Navigation = styled.div`
+  padding: 0.5em;
+  background: lightgrey;
+  display: flex;
+  border-radius: 10px;
+
+  a {
+    margin-right: 0.5em;
+  }
+`
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-  const [user, setUser] = useState('')
-  const [info, setInfo] = useState({ message: null })
-
+  const dispatch = useDispatch()
   const blogFormRef = useRef()
 
-  useEffect(() => {
-    const user = storageService.loadUser()
-    setUser(user)
-  }, [])
+  const user = useSelector(state => state.user)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-  }, [])
-
-  const notifyWith = (message, type='info') => {
-    setInfo({
-      message, type
+    usersService.getAll().then(users => {
+      dispatch(addUsers(users))
+      dispatch(getLoggedUser())
+      dispatch(initializeBlogs())
     })
+  }, [dispatch])
 
-    setTimeout(() => {
-      setInfo({ message: null } )
-    }, 3000)
+  const users = useSelector(state => state.users)
+
+  const blogs = useSelector(state => state.blogs)
+
+  const notifyWith = (content) => {
+    const seconds = 5
+    dispatch(setNotification(content, seconds))
   }
 
-  const login = async (username, password) => {
-    try {
-      const user = await loginService.login({ username, password })
-      setUser(user)
-      storageService.saveUser(user)
-      notifyWith('welcome!')
-    } catch(e) {
-      notifyWith('wrong username or password', 'error')
-    }
+  const login = (username, password) => {
+    dispatch(userLogin(username, password))
   }
 
-  const logout = async () => {
-    setUser(null)
-    storageService.removeUser()
-    notifyWith('logged out')
+  const logout = () => {
+    dispatch(userLogout())
   }
 
-  const createBlog = async (newBlog) => {
-    const createdBlog = await blogService.create(newBlog)
+  const createNewBlog = (newBlog) => {
+    dispatch(createBlog(newBlog))
     notifyWith(`A new blog '${newBlog.title}' by '${newBlog.author}' added`)
-    setBlogs(blogs.concat(createdBlog))
-    blogFormRef.current.toggleVisibility()
   }
 
-  const like = async (blog) => {
-    const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id }
-    const updatedBlog = await blogService.update(blogToUpdate)
-    notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`)
-    setBlogs(blogs.map(b => b.id === blog.id ? updatedBlog : b))
-  }
-
-  const remove = async (blog) => {
-    const ok = window.confirm(`Sure you want to remove '${blog.title}' by ${blog.author}`)
-    if (ok) {
-      await blogService.remove(blog.id)
-      notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`)
-      setBlogs(blogs.filter(b => b.id !== blog.id))
+  const like = (blog) => {
+    const blogToUpdate = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: blog.user.id,
     }
+    dispatch(updateBlog(blogToUpdate))
+    notifyWith(`A like for the blog '${blog.title}' by '${blog.author}'`)
+  }
 
+  const addComment = (id, comment) => {
+    dispatch(addCommentToBlog(id, comment))
+    notifyWith(`Added a comment '${comment}'`)
+  }
+
+  const remove = (blog) => {
+    const ok = window.confirm(
+      `Sure you want to remove '${blog.title}' by ${blog.author}`
+    )
+    if (ok) {
+      dispatch(removeBlog(blog.id))
+      notifyWith(`The blog' ${blog.title}' by '${blog.author} removed`)
+    }
   }
 
   if (!user) {
     return (
       <div>
         <h2>log in to application</h2>
-        <Notification info={info} />
+        <Notification />
         <LoginForm login={login} />
       </div>
     )
   }
 
-  const byLikes = (b1, b2) => b2.likes - b1.likes
+  const sortedBlogs = [...blogs].sort((b1, b2) => b2.likes - b1.likes)
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification info={info} />
-      <div>
-        {user.name} logged in
-        <button onClick={logout}>logout</button>
-      </div>
-      <Togglable buttonLabel='new note' ref={blogFormRef}>
-        <NewBlog createBlog={createBlog} />
-      </Togglable>
-      <div>
-        {blogs.sort(byLikes).map(blog =>
-          <Blog
-            key={blog.id}
-            blog={blog}
-            like={() => like(blog)}
-            canRemove={user && blog.user.username===user.username}
-            remove={() => remove(blog)}
-          />
-        )}
-      </div>
-    </div>
+    <Container>
+      <Router>
+        <div>
+          <Navigation>
+            <Link to="/blogs">blogs</Link>
+            <Link to="/users">users</Link>
+            {user.username} logged in
+            <Button onClick={() => logout()}>
+              logout
+            </Button>
+          </Navigation>
+          <h2>blog app</h2>
+          <Notification />
+
+          <Routes>
+            <Route path="/blogs" element={<Blogs sortedBlogs={sortedBlogs} like={like} remove={remove} user={user} createNewBlog={createNewBlog} blogFormRef={blogFormRef} />} />
+            <Route path="/users" element={<Users users={users} />} />
+            <Route path="/users/:id" element={<User users={users} />} />
+            <Route path="/blogs/:id" element={<BlogPage blogs={blogs} like={like} addComment={addComment} />} />
+          </Routes>
+
+        </div>
+      </Router>
+    </Container>
   )
 }
 
