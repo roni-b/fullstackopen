@@ -16,12 +16,14 @@ const initialBlogs = [
   },
 ]
 
-const initialUsers = [
-  { username: 'tester', password: 'secret' }
-]
+const initialUsers = [{ username: 'tester', password: 'secret' }]
 
 const nonExistingId = async () => {
-  const blog = new Blog({ title: 'willremovethissoon',  author: 'willremovethissoon',  url: 'willremovethissoon' })
+  const blog = new Blog({
+    title: 'willremovethissoon',
+    author: 'willremovethissoon',
+    url: 'willremovethissoon',
+  })
   await blog.save()
   await blog.remove()
 
@@ -30,15 +32,18 @@ const nonExistingId = async () => {
 
 const blogsInDb = async () => {
   const notes = await Blog.find({})
-  return notes.map(blog => blog.toJSON())
+  return notes.map((blog) => blog.toJSON())
 }
 
 const usersInDb = async () => {
   const users = await User.find({})
-  return users.map(user => user.toJSON())
+  return users.map((user) => user.toJSON())
 }
 
 module.exports = {
-  initialBlogs, nonExistingId, blogsInDb,
-  usersInDb, initialUsers
+  initialBlogs,
+  nonExistingId,
+  blogsInDb,
+  usersInDb,
+  initialUsers,
 }

@@ -6,7 +6,12 @@ const api = supertest(app)
 const Blog = require('../models/blog')
 const User = require('../models/user')
 
-const { initialUsers, initialBlogs, blogsInDb, usersInDb } = require('./test_helper')
+const {
+  initialUsers,
+  initialBlogs,
+  blogsInDb,
+  usersInDb,
+} = require('./test_helper')
 
 let authHeader
 
@@ -50,7 +55,7 @@ describe('blogs api', () => {
     test('a blog can be edited', async () => {
       const [blogBefore] = await blogsInDb()
 
-      const modifiedBlog = {...blogBefore, title: 'Goto considered useful'}
+      const modifiedBlog = { ...blogBefore, title: 'Goto considered useful' }
 
       await api
         .put(`/api/blogs/${blogBefore.id}`)
@@ -59,11 +64,9 @@ describe('blogs api', () => {
 
       const blogs = await blogsInDb()
 
-      const titles = blogs.map(r => r.title)
+      const titles = blogs.map((r) => r.title)
 
-      expect(titles).toContain(
-        modifiedBlog.title
-      )
+      expect(titles).toContain(modifiedBlog.title)
     })
 
     describe('a new blog', () => {
@@ -84,13 +87,11 @@ describe('blogs api', () => {
 
         const blogs = await blogsInDb()
 
-        expect(blogs).toHaveLength(initialBlogs.length+1)
+        expect(blogs).toHaveLength(initialBlogs.length + 1)
 
-        const titles = blogs.map(r => r.title)
+        const titles = blogs.map((r) => r.title)
 
-        expect(titles).toContain(
-          blog.title
-        )
+        expect(titles).toContain(blog.title)
       })
 
       test('has likes initialized to 0 if initial value is not given', async () => {
@@ -175,9 +176,7 @@ describe('blogs api', () => {
     test('can not be deleted without valid auth header', async () => {
       const blogsBefore = await blogsInDb()
 
-      await api
-        .delete(`/api/blogs/${id}`)
-        .expect(401)
+      await api.delete(`/api/blogs/${id}`).expect(401)
 
       const blogsAfter = await blogsInDb()
 
@@ -189,7 +188,7 @@ describe('blogs api', () => {
     test('succeeds with valid username and password', async () => {
       const user = {
         username: 'mluukkai',
-        password: 'secret'
+        password: 'secret',
       }
 
       const response = await api
@@ -201,16 +200,14 @@ describe('blogs api', () => {
       const users = await usersInDb()
 
       expect(users).toHaveLength(initialUsers.length + 1)
-      const usernames = users.map(u => u.username)
-      expect(usernames).toContain(
-        user.username
-      )
+      const usernames = users.map((u) => u.username)
+      expect(usernames).toContain(user.username)
     })
 
     test('fails with a proper error if username is too short', async () => {
       const user = {
         username: 'ml',
-        password: 'secret'
+        password: 'secret',
       }
 
       const response = await api
@@ -227,7 +224,7 @@ describe('blogs api', () => {
     test('fails with a proper error if password is too short', async () => {
       const user = {
         username: 'mluukka',
-        password: 'se'
+        password: 'se',
       }
 
       const response = await api
@@ -250,12 +247,9 @@ describe('blogs api', () => {
         .expect(400)
         .expect('Content-Type', /application\/json/)
 
-      expect(response.body.error).toContain(
-        'expected `username` to be unique.'
-      )
+      expect(response.body.error).toContain('expected `username` to be unique.')
     })
   })
-
 })
 
 afterAll(async () => {
