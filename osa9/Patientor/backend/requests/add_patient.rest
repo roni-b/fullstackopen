@@ -1,0 +1,11 @@
+POST http://localhost:3001/api/patients
+Content-Type: application/json
+
+{
+  "name": "Uusi potilas",
+  "dateOfBirth": "1953-04-09",
+  "ssn": "045232-123K",
+  "gender": "male",
+  "occupation": "fireman",
+  "entries": []
+}
